@@ -3,8 +3,7 @@ import 'dart:async';
 import 'package:redrive/obd/connection/obd_connection.dart';
 
 class FakeObdConnection implements ObdConnection {
-  final _incomingController = StreamController<String>();
-
+  final _incomingController = StreamController<String>.broadcast();
   final _connectionStateController = StreamController<bool>.broadcast();
   final _reconnectingStateController = StreamController<bool>.broadcast();
 
@@ -14,6 +13,8 @@ class FakeObdConnection implements ObdConnection {
   bool _isReconnecting = false;
 
   Object? sendError;
+
+  int failNextSends = 0;
 
   @override
   Stream<String> get incoming => _incomingController.stream;
@@ -44,9 +45,18 @@ class FakeObdConnection implements ObdConnection {
     _reconnectingStateController.add(state);
   }
 
-  @override
   Future<void> connect() async {
     _setConnected(true);
+  }
+
+  int reconnectCalls = 0;
+
+  Future<void> Function()? onReconnect;
+
+  @override
+  Future<void> reconnect() async {
+    reconnectCalls++;
+    await onReconnect?.call();
   }
 
   @override
@@ -57,6 +67,11 @@ class FakeObdConnection implements ObdConnection {
   @override
   Future<void> send(String command) async {
     sentCommands.add(command);
+
+    if (failNextSends > 0) {
+      failNextSends--;
+      throw StateError('send failed');
+    }
 
     if (sendError != null) {
       throw sendError!;

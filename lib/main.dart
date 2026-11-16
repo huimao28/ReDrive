@@ -1,6 +1,10 @@
+import 'l10n/app_localizations.dart';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:redrive/services/bluetooth/connection/bluetooth_obd_connection.dart';
+import 'package:redrive/services/connection/obd_connection_switcher.dart';
+import 'package:redrive/services/wifi/connection/wifi_obd_connection.dart';
 
 import 'providers/obd_provider.dart';
 import 'providers/bluetooth_provider.dart';
@@ -12,13 +16,18 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => BluetoothProvider()),
+        ChangeNotifierProvider(create: (_) => WifiObdConnection()),
 
         ChangeNotifierProvider(
           create: (context) {
             final obdProvider = ObdProvider();
 
-            obdProvider.attachConnection(
-              BluetoothObdConnection(context.read<BluetoothProvider>()),
+            ObdConnectionSwitcher(
+              provider: obdProvider,
+              connections: [
+                BluetoothObdConnection(context.read<BluetoothProvider>()),
+                context.read<WifiObdConnection>(),
+              ],
             );
 
             return obdProvider;
@@ -38,6 +47,8 @@ class RedriveApp extends StatelessWidget {
     return MaterialApp(
       title: 'Redrive OBD2',
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       theme: AppThemes.darkTheme,
       home: const RootScreen(),
     );

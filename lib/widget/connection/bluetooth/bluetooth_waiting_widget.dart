@@ -1,3 +1,4 @@
+import 'package:redrive/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class BluetoothWaitingWidget extends StatelessWidget {
@@ -7,6 +8,7 @@ class BluetoothWaitingWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final colorScheme = Theme.of(context).colorScheme;
 
     return Center(
@@ -21,7 +23,7 @@ class BluetoothWaitingWidget extends StatelessWidget {
 
           const SizedBox(height: 24),
           Text(
-            "蓝牙连接",
+            l.bluetoothConnection,
             style: TextStyle(
               color: colorScheme.onSurface,
               fontSize: 20,
@@ -32,7 +34,7 @@ class BluetoothWaitingWidget extends StatelessWidget {
           const SizedBox(height: 12),
 
           Text(
-            "连接 OBD2 适配器后，\n即可查看车辆实时数据。",
+            l.bluetoothDescription,
             textAlign: TextAlign.center,
             style: TextStyle(
               color: colorScheme.onSurface.withValues(alpha: 0.7),
@@ -54,7 +56,7 @@ class BluetoothWaitingWidget extends StatelessWidget {
                 ),
               ),
               child: Text(
-                "开始扫描",
+                l.startScanning,
                 style: TextStyle(
                   color: colorScheme.onPrimary,
                   fontWeight: FontWeight.bold,
